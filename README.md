@@ -8,11 +8,11 @@
   * [版本V1.1](###版本V1.1)
 ## 功能
 
-分段爬取网易Lofter（乐乎）博主的数据，并将数据写本地。写入的信息几乎包括博主的所有数据， 主要有源数据和图片数据，前者包含博主归档页html（版本V1.0特有）、DWR数据、详情页数据、图片地址数据，后者包括图片数据。
+分段爬取网易Lofter（乐乎）博主的数据，并将数据写本地。写入的信息几乎包括博主的所有数据， 主要有源数据和图片数据，前者包含博主归档页html（[版本V1.0特有](https://github.com/jkfaner/LofterSpider/tree/master/LofterSpiderV1.0)）、DWR数据、详情页数据、图片地址数据，后者包括图片数据。
 
 **具体的写入文件类型如下：**
 
-- 写入归档页.html（版本V1.0特有）
+- 写入归档页.html（[版本V1.0特有](https://github.com/jkfaner/LofterSpider/tree/master/LofterSpiderV1.0)）
 
 - 写入DWR.txt（默认）
 - 写入htmlURL.json（默认）
