@@ -29,11 +29,11 @@
 
 爬取后的数据如下：
 
-!image(https://github.com/jkfaner/img-folder/blob/master/LofterSpider/%E6%96%87%E4%BB%B6%E5%A4%B9%E6%A0%91%E7%8A%B6%E5%9B%BEV1.0.png)
+!image(https://github.com/jkfaner/img-folder/blob/master/LofterSpider/tree.png)
 
-!image(https://github.com/jkfaner/img-folder/blob/master/LofterSpider/html%E6%96%87%E4%BB%B6%E5%A4%B9.png)
+!image(https://github.com/jkfaner/img-folder/blob/master/LofterSpider/html.png)
 
-!image(https://github.com/jkfaner/img-folder/blob/master/LofterSpider/%E5%9B%BE%E7%89%87%E6%96%87%E4%BB%B6%E5%A4%B9.png）
+!image(https://github.com/jkfaner/img-folder/blob/master/LofterSpider/image.png）
 
 #### 版本V1.1
 
@@ -49,11 +49,11 @@
 
 爬取后的数据如下：
 
-!image(https://github.com/jkfaner/img-folder/blob/master/LofterSpider/%E5%9B%BE%E7%89%87%E6%96%87%E4%BB%B6%E5%A4%B9V1.1.png)
+!image(https://github.com/jkfaner/img-folder/blob/master/LofterSpider/treeV1.1.png)
 
-!image(https://github.com/jkfaner/img-folder/blob/master/LofterSpider/html%E6%96%87%E4%BB%B6%E5%A4%B9V1.1.png)
+!image(https://github.com/jkfaner/img-folder/blob/master/LofterSpider/htmlV1.1.png)
 
-!image(https://github.com/jkfaner/img-folder/blob/master/LofterSpider/%E6%96%87%E4%BB%B6%E5%A4%B9%E6%A0%91%E7%8A%B6%E5%9B%BEV1.1.png)
+!image(https://github.com/jkfaner/img-folder/blob/master/LofterSpider/imageV1.1.png)
 
 # 版本更新信息
 
