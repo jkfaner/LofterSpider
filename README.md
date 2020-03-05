@@ -3,9 +3,12 @@
 * [实例](#实例)
   * [版本V1.0](#版本V1.0)
   * [版本V1.1](#版本V1.1)
+  * [版本V1.2](#版本V1.2)
 * [版本更新信息](#版本更新信息)
   * [版本V1.0](#版本V1.0)
   * [版本V1.1](#版本V1.1)
+  * [版本V1.2](#版本V1.2)
+  
 ## 功能
 
 分段爬取网易Lofter（乐乎）博主的数据，并将数据写本地。写入的信息几乎包括博主的所有数据， 主要有源数据和图片数据，前者包含博主归档页html（[版本V1.0特有](https://github.com/jkfaner/LofterSpider/tree/master/LofterSpiderV1.0)）、DWR数据、详情页数据、图片地址数据，后者包括图片数据。
@@ -13,7 +16,6 @@
 **具体的写入文件类型如下：**
 
 - 写入归档页.html（[版本V1.0特有](https://github.com/jkfaner/LofterSpider/tree/master/LofterSpiderV1.0)）
-
 - 写入DWR.txt（默认）
 - 写入htmlURL.json（默认）
 - 写入imageURL.json（默认）
@@ -61,6 +63,19 @@
 
 ![](https://github.com/jkfaner/img-folder/blob/master/LofterSpider/imageV1.1.png)
 
+### 版本V1.2
+
+在1.1的版本基础上，进行了文件夹重命名。当我们使用了V1.1爬取了大量数据，文件夹命名让人不知道是谁的数据时，V1.2可以帮你。
+
+我们除了将Cookie值放入配置文件（**config_user.json**）中，还需要给**RenameFolder**一个**value**，'1'表示按照："\[博主]_博客昵称"命名，'0'表示按照：三级域名命名，其余参数表示不作处理：
+
+```json
+{
+  "RenameFolder": 1,
+  "Cookie": ""
+}
+```
+
 ## 版本更新信息
 
 ## V1.0
@@ -73,8 +88,6 @@
 ***功能：***
 
 实现网易Lofter个人原图采集。
-
-
 
 ## V1.1
 
@@ -91,4 +104,18 @@
 - [x] 新增：多进程并行下载，让图片下载更快
 - [x] 新增：Log日志，让运行情况更明确
 - [x] 优化：优化部分代码，提高爬虫效率
+- [x] 优化：优化文件夹命名
+
+## V1.2
+
+**项目文件包含：**
+
+1. config_user.json
+2. getUserFollowingList.py
+3. LofterSpider.py
+4. logger.py
+
+**功能：**
+
+- [x] 新增：文件夹批量重命名
 - [x] 优化：优化文件夹命名
