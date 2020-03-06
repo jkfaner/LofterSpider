@@ -19,6 +19,8 @@ from lxml import etree
 from concurrent import futures
 from logger import logger
 from getUserFollowingList import USERS as userInfos
+from tqdm import tqdm
+
 
 
 init_path = os.path.split(os.path.realpath(__file__))[0] + os.sep
@@ -33,7 +35,6 @@ class SpiderMethod(object):
         self.html_path = ''
         self.image_path = ''
         self.image_url_path = ''
-        self.image_url = ''
         self.image_filename = ''
         self.url_list = ''
         self.filename_list = ''
@@ -134,7 +135,6 @@ class Loft(SpiderMethod):
         for permalink in permalinks:
             url = "https://{userDomain}.lofter.com/post/{permalink}".format(**userInfo, permalink=permalink)
             url_list.append(url)
-        # permalink_dict = {permalink: url for permalink, url in zip(permalinks, url_list)}
         permalink_dict = dict(zip(permalinks, url_list))
         self.writ_file(self.url_path, permalink_dict)
 
@@ -231,31 +231,29 @@ class Loft(SpiderMethod):
             message = 'Task No.{userNo} [{blogNickName}] Get all pages Success! run {time:.2f}'
             logger.info(message.format(**userInfo, time=time0-time.time()))
 
-    def image_url_match(self, images, userInfos):
+    def image_url_match(self, images):
         """图片地址匹配"""
         for image in images:
             try:
-                self.image_url = re.search(
+                image_url = re.search(
                     r"(.*net/img/.*\.[jnpegif]{3,4})?",
                     image.attrib['bigimgsrc']).group(1)
-                self.image_filename = re.match(
-                    r".*net/img/(.*\.[jnpegif]{3,4})", self.image_url).group(1)
+                image_filename = re.match(
+                    r".*net/img/(.*\.[jnpegif]{3,4})", image_url).group(1)
             except BaseException:
                 print("The match fails, the rule is correct, pass ...")
             else:
-                self.url_list.append(self.image_url)
-                self.filename_list.append(self.image_filename)
-                message = "Task No.{userNo} [{blogNickName}] match image url [{image}]"
-                logger.info(message.format(**userInfos, image=self.image_url))
+                self.url_list.append(image_url)
+                self.filename_list.append(image_filename)
 
-    def image_url_match_verification(self, html, userInfos):
+    def image_url_match_verification(self, html):
         """图片地址匹配验证"""
         images1 = html.xpath("//a[@class='imgclasstag']")
         images2 = html.xpath("//a[@class='img imgclasstag']")
         if images1:
-            self.image_url_match(images1, userInfos)
+            self.image_url_match(images1)
         elif images2:
-            self.image_url_match(images2, userInfos)
+            self.image_url_match(images2)
 
     def getImageUrl_module(self):
         """采集图片地址模块"""
@@ -269,9 +267,7 @@ class Loft(SpiderMethod):
                 for file in files:
                     html = self.read_file(self.html_path + "{}".format(file))
                     html = etree.HTML(html)
-                    self.image_url_match_verification(html, userInfos)
-                # self.image_dict = {filename: url for filename, url in zip(self.filename_list, self.url_list)}
-                # 上面与下面结果一样，但是上面效率比下面的低
+                    self.image_url_match_verification(html)
                 self.image_dict = dict(zip(self.filename_list, self.url_list))
                 self.writ_file(self.image_url_path, self.image_dict)
             message = 'Task No.{userNo} [{blogNickName}] Get [imageURL.json] Success! run {time:.2f}'
@@ -293,9 +289,8 @@ class Loft(SpiderMethod):
         '''下载一张图片
         :param image: 字典，包括图片的保存目录、图片的序号、图片的URL
         '''
-        message = 'Task No.{userNo} [{blogNickName}] Download No.{linkno} [{link}]'
-        logger.info(message.format(**image["userInfo"], **image))
-
+        # message = 'Task No.{userNo} [{blogNickName}] Download No.{linkno} [{link}]'
+        # logger.info(message.format(**image["userInfo"], **image))
         filename = os.path.split(image['link'])[1]
         if not self.check_file(self.image_path + filename):
             t0 = time.time()
@@ -339,14 +334,15 @@ class Loft(SpiderMethod):
         files = os.listdir(self.g_parent_path)
         for userInfo in userInfos:
             for file in files:
-                old = self.g_parent_path + file
                 # （域名———>博客名）
                 if userInfo['userDomain'] == file and userInfo["RenameFolder"] == 1:
+                    old = self.g_parent_path + file
                     new = self.g_parent_path + "[博主]_" + userInfo['blogNickName']
                     os.rename(old, new)
                     logger.info("文件夹名：{}--->{}".format(file, "[博主]_" + userInfo['blogNickName']))
                 # （博客名———>域名）
                 elif "[博主]_" + userInfo['blogNickName'] == file and userInfo["RenameFolder"] == 0:
+                    old = self.g_parent_path + file
                     new = self.g_parent_path + userInfo['userDomain']
                     os.rename(old, new)
                     logger.info("文件夹名：{}--->{}".format(file, userInfo['userDomain']))
