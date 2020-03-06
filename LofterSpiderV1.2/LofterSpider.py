@@ -19,7 +19,6 @@ from lxml import etree
 from concurrent import futures
 from logger import logger
 from getUserFollowingList import USERS as userInfos
-from tqdm import tqdm
 
 
 
