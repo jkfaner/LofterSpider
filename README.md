@@ -9,7 +9,7 @@
 爬取网易Lofter博主的个人信息、个人发布的所有图片。
 
 ## 使用方法
-- 1.获取源代码于依赖配置
+- 1.获取源代码与依赖配置
 ```
 git clone https://github.com/jkfaner/LofterSpider.git
 pip install -r requests.txt
