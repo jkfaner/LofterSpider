@@ -9,7 +9,6 @@
 @File:spider.py
 @Desc:
 """
-import json
 from typing import List
 
 from Extractor.entity.archive import Archive

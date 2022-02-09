@@ -64,6 +64,33 @@ class SpiderIter(SessionRequest, ExtractorDWRAPI, LoftExtractorAPI):
             timestamp = int(min([_.time for _ in archive_data]))
             yield from self.getUserArchiveIter(blogName, blogId, timestamp, total)
 
+    @staticmethod
+    def __extractorByXpath(response):
+        """
+        通过xpath解析
+        :param response:
+        :return:
+        """
+        try:
+            html = etree.HTML(response.content.decode("utf-8"))
+            imageElements = html.xpath(
+                "//a[@class='imgclasstag' or @class='img imgclasstag' or @class='img-lnk imgclasstag']")
+        except AttributeError:
+            return []
+        return imageElements
+
+    @staticmethod
+    def __extractorByRe(response):
+        """
+        通过正则解析
+        :param response:
+        :return:
+        """
+        images = list()
+        for img in re.findall(r'bigimgsrc="(.*)">', (response.content.decode("utf-8"))):
+            images.append(img.split("?")[0])
+        return images
+
     @desc_time(0)
     def getHtmlPage(self, blogName: str, permalink: str) -> Queue:
         """
@@ -72,20 +99,22 @@ class SpiderIter(SessionRequest, ExtractorDWRAPI, LoftExtractorAPI):
         :param permalink:
         :return:
         """
+
         response = super(SpiderIter, self).getHtmlPage(blogName, permalink)
-        html_code = response.content.decode("utf-8")
-        html = etree.HTML(html_code)
-        imageElements = html.xpath("//a[@class='imgclasstag' or @class='img imgclasstag']")
-        queue = Queue()
-        if imageElements:
-            for image in imageElements:
-                try:
-                    url = re.search(r"(.*net/img/.*\.[jnpegif]{3,4})", image.attrib['bigimgsrc']).group(1)
-                    queue.enqueue(url)
-                except AttributeError:
-                    # 图片损坏
-                    pass
-        else:
-            for img in re.findall(r'bigimgsrc="(.*)">', html_code):
-                queue.enqueue(img.split("?")[0])
-        return queue
+        imageElements = self.__extractorByXpath(response)
+        queueXpath = Queue()
+        for image in imageElements:
+            try:
+                url = re.search(r"(.*net/img/.*\.[jnpegif]{3,4})", image.attrib['bigimgsrc']).group(1)
+                queueXpath.enqueue(url)
+            except AttributeError:
+                # 图片损坏
+                pass
+
+        queueRe = Queue()
+        for image in self.__extractorByRe(response):
+            queueRe.enqueue(image)
+        imagesXpath = len(queueXpath.get_all())
+        imagesRe = len(queueRe.get_all())
+        logger.info("XPath解析：图片{}张 正则解析：图片{}张".format(imagesXpath,imagesRe))
+        return queueRe if imagesXpath <= imagesRe else imagesXpath
