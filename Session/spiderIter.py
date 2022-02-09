@@ -17,6 +17,7 @@ from Extractor.jsonExtractorDWR import ExtractorDWRAPI
 from Extractor.loftExtractorAPI import LoftExtractorAPI
 from Session.spiderRequest import SessionRequest
 from util.decorator import desc_time
+from util.logger import logger
 from util.queue import Queue
 
 
@@ -46,21 +47,22 @@ class SpiderIter(SessionRequest, ExtractorDWRAPI, LoftExtractorAPI):
         archive_queue = self.extractorArchive(dwr=dwr_dict)
         return archive_queue
 
-    def getUserArchiveIter(self, blogName: str, blogId: int, timestamp: int, nums=1000) -> iter:
+    def getUserArchiveIter(self, blogName: str, blogId: int, timestamp: int, total=1000) -> iter:
         """
         获取全部归档数据
         :param blogName:
         :param blogId:
         :param timestamp:
-        :param nums:单次量
+        :param total:单次量
         :return:迭代对象
         """
-        archive_queue = self.getUserArchiveList(blogName, blogId, timestamp, nums)
+        archive_queue = self.getUserArchiveList(blogName, blogId, timestamp, total)
         archive_data = archive_queue.get_all()
         if archive_data:
+            logger.info(f"归档信息获取中：{blogName} -> {blogId} -> {timestamp}")
             yield archive_data
             timestamp = int(min([_.time for _ in archive_data]))
-            yield from self.getUserArchiveIter(blogName, blogId, timestamp, nums)
+            yield from self.getUserArchiveIter(blogName, blogId, timestamp, total)
 
     @desc_time(0)
     def getHtmlPage(self, blogName: str, permalink: str) -> Queue:

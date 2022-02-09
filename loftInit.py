@@ -10,8 +10,6 @@
 @Desc:
 """
 from DateBase.redisDB import Redis
-from Extractor.jsonExtractorAPI import ExtractorApi
-from Extractor.jsonExtractorDWR import ExtractorDWRAPI
 from login import Login
 from Session.spiderIter import SpiderIter
 from util.config import Config
@@ -43,7 +41,7 @@ class LoftInit(object):
         db_name = self.global_config.get("mysql", "db_name")
         return host, port, user, pwd, db_name
 
-    def __load_redis(self)->tuple:
+    def __load_redis(self) -> tuple:
         """
         加载redis数据库配置信息
         :return:
@@ -52,7 +50,7 @@ class LoftInit(object):
         port = self.global_config.getInt("redis", "port")
         password = self.global_config.get("redis", "password")
         db = self.global_config.getInt("redis", "db")
-        return host,port,password,db
+        return host, port, password, db
 
     def __load_login(self) -> tuple:
         """

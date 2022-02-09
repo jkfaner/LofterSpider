@@ -46,6 +46,6 @@ CREATE TABLE `login` (
   PRIMARY KEY (`id`,`username`) USING BTREE
 ) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 ```
-- 5.运行spider.py
+- 5.运行main.py
 ## 爬取结果
 ![爬取结果](img/WX20220209-203936@2x.png)

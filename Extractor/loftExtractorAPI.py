@@ -9,6 +9,7 @@
 @File:loftExtractorAPI.py
 @Desc:
 """
+
 from Extractor.entity.archive import Archive
 from Extractor.entity.archiveValues import ArchiveValues
 from Extractor.entity.blogInfo import BlogInfo

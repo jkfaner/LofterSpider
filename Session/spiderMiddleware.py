@@ -22,6 +22,31 @@ class SpiderMiddleware(LoftInit, SessionMiddleware):
     redis_user = "userBean"
     redis_archive = "archive"
 
+    @staticmethod
+    def entityToJson(entity):
+        """
+        entity模块中的对象转json
+        :param entity:
+        :return:
+        """
+        return json.dumps(entity, default=lambda entity: {
+            k.split("__")[-1]: v
+            for k, v in entity.__dict__.items()
+        })
+
+    @staticmethod
+    def jsonToEntity(entity, json_str: str):
+        """
+        json转entity模块中的对象
+        :param entity:
+        :param json_str:
+        :return:
+        """
+        _entity = entity()
+        for k, v in json.loads(json_str).items():
+            setattr(_entity, k, v)
+        return _entity
+
     def get_followBlogUser(self, follow):
         """
         爬取关注用户信息
@@ -29,24 +54,34 @@ class SpiderMiddleware(LoftInit, SessionMiddleware):
         """
         blogId = int(follow.blogId)
         if not self.redisPool.redis.hexists(name=self.redis_user, key=blogId):
-            follow_json = json.dumps(follow, default=lambda follow: {
-                k.split("__")[-1]: v for k, v in follow.__dict__.items()
-            })
-            self.redisPool.redis.hset(name=self.redis_user, key=blogId, value=follow_json)
+            self.redisPool.redis.hset(name=self.redis_user, key=blogId, value=self.entityToJson(follow))
 
-    def get_userArchive(self, follow: UserBean) -> List[UserBean]:
+    def get_userArchive(self, follow: UserBean, archives: List[Archive]):
         """
         爬取归档信息
         :param follow:
+        :param kwargs:
         :return:
         """
         pass
 
-    def get_permalinkPage(self, follow: UserBean=None, archive:Archive=None, index:int=None, total:int=None, **kwargs):
+    def get_permalinkPage(self, follow: UserBean, archive: Archive, index: int = None, total: int = None, get=False):
+        """
+        解析页面
+        :param follow:用户对象
+        :param archive:归档对象
+        :param index:索引
+        :param total:合计
+        :param get:是否取数据
+        :return:
+        """
         key = "{}&{}".format(int(follow.blogId), archive.values.permalink)
-        if kwargs.get("archive_json"):
-            self.redisPool.redis.hset(name=self.redis_archive, key=key, value=kwargs.get("archive_json"))
-            return False
-        if not self.redisPool.redis.hexists(name=self.redis_archive, key=key):
-            return True
-        return False
+        if self.redisPool.redis.hexists(name=self.redis_archive, key=key):
+            return True if not get else self.redisPool.redis.hget(name=self.redis_archive, key=key)
+
+        archive_json = json.dumps(archive, default=lambda archive: {
+            k.split("__")[-1]: v
+            for k, v in archive.__dict__.items()
+        })
+        self.redisPool.redis.hset(name=self.redis_archive, key=key, value=archive_json)
+        return False if not get else archive_json
