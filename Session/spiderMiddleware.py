@@ -14,11 +14,10 @@ from typing import List
 
 from Extractor.entity.archive import Archive
 from Extractor.entity.userBean import UserBean
-from Session.sessionMiddleware import SessionMiddleware
-from loftInit import LoftInit
+from Session.spiderIter import SpiderIter
 
 
-class SpiderMiddleware(LoftInit, SessionMiddleware):
+class SpiderMiddleware(SpiderIter):
     redis_user = "userBean"
     redis_archive = "archive"
 
@@ -53,6 +52,7 @@ class SpiderMiddleware(LoftInit, SessionMiddleware):
         :return:
         """
         blogId = int(follow.blogId)
+        # 储存在redis数据库
         if not self.redisPool.redis.hexists(name=self.redis_user, key=blogId):
             self.redisPool.redis.hset(name=self.redis_user, key=blogId, value=self.entityToJson(follow))
 
@@ -79,9 +79,10 @@ class SpiderMiddleware(LoftInit, SessionMiddleware):
         if self.redisPool.redis.hexists(name=self.redis_archive, key=key):
             return True if not get else self.redisPool.redis.hget(name=self.redis_archive, key=key)
 
-        archive_json = json.dumps(archive, default=lambda archive: {
-            k.split("__")[-1]: v
-            for k, v in archive.__dict__.items()
-        })
+        # archive_json = json.dumps(archive, default=lambda archive: {
+        #     k.split("__")[-1]: v
+        #     for k, v in archive.__dict__.items()
+        # })
+        archive_json = self.entityToJson(archive)
         self.redisPool.redis.hset(name=self.redis_archive, key=key, value=archive_json)
         return False if not get else archive_json

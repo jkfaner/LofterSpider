@@ -27,7 +27,7 @@ class Spider(SpiderMiddleware):
         """
         # 获取关注数据
         logger.info("正在获取关注信息...")
-        follow_queue = self.spiderObj.getUserFollowingList()
+        follow_queue = self.getUserFollowingList()
         for follow in follow_queue.get_all():
             super(Spider, self).get_followBlogUser(follow)
             yield follow
@@ -41,7 +41,7 @@ class Spider(SpiderMiddleware):
         # 获取归档
         logger.info("正在获取{}的所有归档信息...".format(follow.blogInfo.blogNickName))
         archives_list = list()
-        for ss in self.spiderObj.getUserArchiveIter(
+        for ss in self.getUserArchiveIter(
                 blogName=follow.blogInfo.blogName,
                 blogId=int(follow.blogId),
                 timestamp=self.time(),
@@ -62,7 +62,7 @@ class Spider(SpiderMiddleware):
         """
         archive_info = super(Spider, self).get_permalinkPage(follow, archive, index, total)
         if not archive_info:
-            images = self.spiderObj.getHtmlPage(
+            images = self.getHtmlPage(
                 blogName=follow.blogInfo.blogName,
                 permalink=archive.values.permalink
             )

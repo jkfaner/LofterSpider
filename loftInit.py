@@ -10,8 +10,6 @@
 @Desc:
 """
 from DateBase.redisDB import Redis
-from login import Login
-from Session.spiderIter import SpiderIter
 from util.config import Config
 from DateBase.mysqlDB import MyPymysqlPool
 
@@ -22,12 +20,25 @@ class LoftInit(object):
         # 实例化配置文件对象
         self.global_config = Config()
         # 实例化数据库池
-        __mysqlPool = MyPymysqlPool(*self.__load_mysql())
+        self.mysqlPool = MyPymysqlPool(*self.__load_mysql())
         self.redisPool = Redis(*self.__load_redis())
-        # 实例化登录
-        __loginObj = Login(*self.__load_login(), mysqlPool=__mysqlPool)
-        # 实例化爬虫接口
-        self.spiderObj = SpiderIter(*__loginObj.login())
+        self.login_username, self.login_password = self.__load_login()
+        self.open_thread,self.thread_num = self.__load_spider()
+
+    def __load_spider(self)->tuple:
+        """
+        加载爬虫配置信息
+        :return:
+        """
+        try:
+            open_thread = self.global_config.getBoolean("spider", "open_thread")
+        except ValueError:
+            raise Exception("是否开启多线程下载，True or False")
+        try:
+            thread_num = self.global_config.getInt("spider", "thread_num")
+        except ValueError:
+            raise Exception("线程数仅允许为整数")
+        return open_thread,thread_num
 
     def __load_mysql(self) -> tuple:
         """

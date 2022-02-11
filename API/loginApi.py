@@ -23,3 +23,12 @@ class LoginAPI(BaseLoftAPI):
         params = dict(product="lofter-pc",_=self.time())
         return self.join_url(url,params)
 
+    def checkLoginAPI(self):
+        """
+        检查登录接口
+        :return:
+        """
+        url = "https://www.lofter.com/payViewApply.do?"
+        params = dict(op="introduce")
+        return self.join_url(url, params)
+
