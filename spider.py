@@ -29,10 +29,12 @@ class Spider(SpiderMiddleware):
         logger.info("正在获取关注信息...")
         follow_queue = self.getUserFollowingList()
         for follow in follow_queue.get_all():
-            super(Spider, self).get_followBlogUser(follow)
-            yield follow
+            if super(Spider, self).get_followBlogUser(follow):
+                yield follow
+            else:
+                logger.info("[ {} -> {} ]用户数据没有更新，不需要爬取归档信息".format(follow.blogId,follow.blogInfo.blogNickName))
 
-    def get_userArchive(self, follow: UserBean, **kwargs) -> List[Archive]:
+    def get_userArchive(self, follow: UserBean, **kwargs) -> iter:
         """
         爬取归档信息
         :param follow:用户对象
@@ -40,15 +42,24 @@ class Spider(SpiderMiddleware):
         """
         # 获取归档
         logger.info("正在获取{}的所有归档信息...".format(follow.blogInfo.blogNickName))
-        archives_list = list()
+        # archives_list = list()
+        # for ss in self.getUserArchiveIter(
+        #         blogName=follow.blogInfo.blogName,
+        #         blogId=int(follow.blogId),
+        #         timestamp=self.time(),
+        #         total=1000):
+        #     archives_list.extend(ss)
+        # logger.info("已获取归档信息{}条...".format(len(archives_list)))
+        # return archives_list
         for ss in self.getUserArchiveIter(
                 blogName=follow.blogInfo.blogName,
                 blogId=int(follow.blogId),
                 timestamp=self.time(),
                 total=1000):
-            archives_list.extend(ss)
-        logger.info("已获取归档信息{}条...".format(len(archives_list)))
-        return archives_list
+            super(Spider, self).get_userArchive(follow=follow,archives=ss)
+            logger.info("已获取归档信息{}条...".format(len(ss)))
+            yield ss
+
 
     def get_permalinkPage(self, follow: UserBean, archive: Archive, index: int = None, total: int = None, get=False):
         """
@@ -83,7 +94,11 @@ class Spider(SpiderMiddleware):
         :return:
         """
         for follow in self.get_followBlogUser():
-            archives_list = self.get_userArchive(follow)
-            len_archives = len(archives_list)
-            for index, archive in enumerate(archives_list, 1):
-                archive_info = self.get_permalinkPage(follow, archive, index, len_archives)
+            if follow.blogId == 492262994:
+                continue
+            # archives_list = self.get_userArchive(follow)
+            # len_archives = len(archives_list)
+            for archives_list in self.get_userArchive(follow):
+                len_archives = len(archives_list)
+                for index, archive in enumerate(archives_list, 1):
+                    archive_info = self.get_permalinkPage(follow, archive, index, len_archives)

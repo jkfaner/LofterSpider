@@ -11,7 +11,7 @@
 """
 
 from login import Login
-
+import time
 
 class SessionMiddleware(Login):
 
@@ -20,5 +20,6 @@ class SessionMiddleware(Login):
         if method.lower() == 'post':
             self.checkLogin()
             headers.update({"cookie": self.setCookie()})
+            time.sleep(2)
 
         return super(SessionMiddleware, self).fetch(url=url, headers=headers, method=method, **kwargs)
