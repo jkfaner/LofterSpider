@@ -61,11 +61,10 @@ class SpiderMiddleware(SpiderIter):
         result = self.mysqlPool.getOne(sql="SELECT blogId,postAddTime FROM userInfo WHERE blogId=%s",param=[follow.blogId])
         if not result:
             self.mysqlPool.insert(
-                sql="INSERT INTO userInfo (blogId,blogName,blogNickName,homePageUrl,postAddTime,postModTime) VALUES (%s,%s,%s,%s,%s,%s)",
+                sql="INSERT INTO userInfo (blogId,blogName,homePageUrl,postAddTime,postModTime) VALUES (%s,%s,%s,%s,%s)",
                 param=[
                     follow.blogId,
                     follow.blogInfo.blogName,
-                    follow.blogInfo.blogNickName,
                     follow.blogInfo.homePageUrl,
                     int(follow.blogInfo.postAddTime),
                     int(follow.blogInfo.postModTime)
@@ -80,10 +79,9 @@ class SpiderMiddleware(SpiderIter):
 
                 return False
             self.mysqlPool.update(
-                sql="UPDATE userInfo SET blogName=%s , blogNickName=%s , homePageUrl=%s , postAddTime=%s,postModTime=%s WHERE blogId=%s",
+                sql="UPDATE userInfo SET blogName=%s ,  homePageUrl=%s , postAddTime=%s,postModTime=%s WHERE blogId=%s",
                 param=[
                     follow.blogInfo.blogName,
-                    follow.blogInfo.blogNickName,
                     follow.blogInfo.homePageUrl,
                     int(follow.blogInfo.postAddTime),
                     int(follow.blogInfo.postModTime),
